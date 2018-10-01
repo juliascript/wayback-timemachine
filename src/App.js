@@ -5,6 +5,7 @@ import CoverFlow from './CoverFlow.js';
 import jQuery from 'jquery';
 
 function updateUrlParameter(value) {
+  // var urls = value.split(",");
   window.history.replaceState("", "", "?q=" + value);
 }
 
@@ -144,14 +145,21 @@ class App extends Component {
   }
 
   handleSubmit(event) {
-    this.fetchData(this.refs.searchEl.value);
-    updateUrlParameter(this.refs.searchEl.value);
-    event.preventDefault();
+    //this.state.results = []; // empty results on submit
+     updateUrlParameter(this.refs.searchEl.value);
+    var urls = this.refs.searchEl.value.split(",");
+    for (var i in urls) {
+      var url = urls[i];
+      this.fetchData(url);
+      event.preventDefault();
 
-    // HACK there is a bug, maybe with the React+THREE.js integration where images
-    // are duplicating. It might be related to react's lifecyle or render.
-    // As a work-around we do a full page load on submit.
-    window.location.reload();
+      // HACK there is a bug, maybe with the React+THREE.js integration where images
+      // are duplicating. It might be related to react's lifecyle or render.
+      // As a work-around we do a full page load on submit.
+      
+    }
+    // window.location.reload();
+    // this.fetchData(this.refs.searchEl.value);
   }
 
   fetchData(searchValue) {
@@ -201,8 +209,10 @@ class App extends Component {
       });
 
       var dataProcessed = processData(dataMapped);
-
-      this.setState({results: dataProcessed});
+      // can I just append to the state here? and then clear the results when a new query is submitted ..
+      var currentResults = this.state.results;
+      var fullResults = currentResults.concat(dataProcessed);
+      this.setState({results: fullResults});
     });
   }
 
